@@ -7,8 +7,8 @@ shape_dir_test        = dataset_dir+'/shapes_test'
 velocity_dir_test     = dataset_dir+'/velocities_test'
 pressure_dir_test     = dataset_dir+'/pressures_test'
 
-input_dir             = shape_dir_test
-sol_dir               = velocity_dir_test
+input_dir             = shape_dir
+sol_dir               = velocity_dir
 input_dir_test        = shape_dir_test
 sol_dir_test          = velocity_dir_test
 
