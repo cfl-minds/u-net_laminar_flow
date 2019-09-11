@@ -1,11 +1,12 @@
 # Generic imports
-import numpy as np
+import numpy             as np
+import pandas            as pd
 import matplotlib.pyplot as plt
-import pandas as pd
+
 # Custom imports
-from parameters                           import *
-from python_tools.datasets.datasets_utils import *
-from python_tools.networks.networks_utils import *
+from params         import *
+from datasets_utils import *
+from networks_utils import *
 
 # Load model
 print('Loading model from disk')
