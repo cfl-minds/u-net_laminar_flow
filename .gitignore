@@ -5,3 +5,7 @@ __pycache__
 */__pycache__
 *.pyc
 results
+accuracy_and_loss
+loss_and_accuracy.png
+model.h5
+model.json

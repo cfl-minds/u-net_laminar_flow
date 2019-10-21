@@ -32,9 +32,8 @@ print('Validation set size is', imgs_valid.shape[0])
 print('Test       set size is', imgs_tests.shape[0])
 print('Input images downscaled to',str(width)+'x'+str(height))
 
-start = time.time()
-
 # Set the network and train it
+start              = time.time()
 regression         = getattr(networks_utils, network)
 model, train_model = regression(imgs_train,
                                 sols_train,
@@ -54,7 +53,7 @@ model, train_model = regression(imgs_train,
                                 n_channels)
 
 end = time.time()
-print(end-start)
+print('Training time was ',end-start,' seconds')
 
 # Evaluate score on test set
 score = evaluate_model_score(model, imgs_tests, sols_tests)

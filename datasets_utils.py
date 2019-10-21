@@ -2,6 +2,7 @@
 import os
 import re
 import sys
+import time
 import math
 import numpy as np
 import matplotlib
@@ -94,9 +95,9 @@ def get_img(img_name):
 def load_and_reshape_img(img_name, height, width, color):
     # Load and reshape
     x = img_to_array(load_img(img_name))
-    x = skimage.transform.resize(x,(height,width),
-                                 anti_aliasing=True,
-                                 mode='constant')
+    x = skimage.transform.resize(x,(height,width))
+#                                 anti_aliasing=True,
+#                                 mode='constant')
 
     # Handle color
     if (color == 'bw'):
@@ -111,12 +112,14 @@ def load_and_reshape_img(img_name, height, width, color):
 ### ************************************************
 ### Load full image dataset
 def load_img_dataset(my_dir, downscaling, color):
+    # Start counting time
+    start = time.time()
+    
     # Count files in directory
     data_files = [f for f in os.listdir(my_dir) if (f[0:5] == 'shape')]
-    #data_files = [f for f in os.listdir(my_dir)]
     data_files = sorted(data_files)
     n_imgs     = len(data_files)
-    print('I find {} images'.format(n_imgs))
+    print('I found {} images'.format(n_imgs))
 
     # Check size of first image
     img    = get_img(my_dir+'/'+data_files[0])
@@ -139,6 +142,10 @@ def load_img_dataset(my_dir, downscaling, color):
                                              height, width, color)
         bar.next()
     bar.finish()
+
+    # Stop counting time
+    end = time.time()
+    print('Loaded ',n_imgs,' imgs in ',end-start,' seconds')
 
     return imgs, n_imgs, height, width, n_channels
 
