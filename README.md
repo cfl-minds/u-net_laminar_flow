@@ -4,8 +4,7 @@ A project concerned with the prediction of (laminar) velocity and pressure field
 
 ## Dataset example
 
-The dataset contains 12.000 random shapes.
-
+The dataset contains 12.000 random shapes.  
 Each shape in the dataset is labeled with its velocity and pressure fields (directly as images):
 
 <img width="944" alt="Input and predictions" src="https://user-images.githubusercontent.com/44053700/64676014-dec10f80-d474-11e9-970b-ceaf83bcef5b.png">
