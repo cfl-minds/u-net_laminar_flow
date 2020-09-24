@@ -3,8 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 from time import time
-import pickle
-import matplotlib.pyplot as plt
+
+
+dx = 0.01
+dy = 0.01
+N = 12000##nombre de formes aléatoires
+dir_vtu = 'D:/DS0/vtus/'
+dir_matrices = 'D:/DataUnet/'
 
 
 def read_scalar(champ, fichier):
@@ -37,9 +42,6 @@ def flow_field(vtu):
 start = time()
 
 ### définir un maillage structuré uniforme
-
-dx = 0.01
-dy = 0.01
 x = 0.5 * dx + np.arange(-5, 5, dx)
 y = 0.5 * dy + np.arange(-5, 10, dy)
 
@@ -49,9 +51,12 @@ for i in range(len(x)):
     for j in range(len(y)):
         grid[i * len(y) + j] = np.array([y[j], x[i]])
 
-for index in range(10):
+toutes_formes = np.zeros((len(x), len(y), 1, 10))
+toutes_imgs = np.zeros((len(x), len(y), 3, 10))
+start = time()
+for index in range(N):
     ##lire le maillage d'un vtu
-    vtu = pd.read_csv('D:/DS0/vtus/shape_{}.vtu'.format(index))
+    vtu = pd.read_csv(dir_vtu + 'shape_{}.vtu'.format(index))
     N = int(vtu.iloc[1][0][27:32])  ## number of nodes
     vtu.columns = ['x']
 
@@ -72,29 +77,30 @@ for index in range(10):
     data1 = griddata(noeuds.values, data, grid)
 
     ###Représenter les champs structurés par une image
-    image = np.zeros((len(x), len(y), 4))
     for k in range(grid.shape[0]):
-
         i = len(x) - 1 - (k // len(y))
         j = k % len(y)
-        image[i, j] = data1[k]
+        toutes_formes[i, j, 0, index] = data1[k, 0]
+        toutes_imgs[i, j, :, index] = data1[k, 1:]
 
-    sshape = image[:, :, 0]
-    uu = image[:, :, 1] * sshape
-    vv = image[:, :, 2] * sshape
-    pp = image[:, :, 3] * sshape
-    velocity = (uu ** 2 + vv ** 2) ** (1 / 2)
+bas = toutes_imgs.min()
+haut = toutes_imgs.max()
 
-    with open('D:/DataUnet/u/shape_{}.pickle'.format(index), 'wb') as handle1:
-        pickle.dump(uu, handle1, protocol=pickle.HIGHEST_PROTOCOL)
-    with open('D:/DataUnet/v/shape_{}.pickle'.format(index), 'wb') as handle2:
-        pickle.dump(vv, handle2, protocol=pickle.HIGHEST_PROTOCOL)
-    with open('D:/DataUnet/p/shape_{}.pickle'.format(index), 'wb') as handle3:
-        pickle.dump(pp, handle3, protocol=pickle.HIGHEST_PROTOCOL)
-    with open('D:/DataUnet/velocities/shape_{}.pickle'.format(index), 'wb') as handle4:
-        pickle.dump(velocity, handle4, protocol=pickle.HIGHEST_PROTOCOL)
-    with open('D:/DataUnet/shapes/shape_{}.pickle'.format(index), 'wb') as handle5:
-        pickle.dump(sshape, handle5, protocol=pickle.HIGHEST_PROTOCOL)
+for index in range(10):
+    velocity = (toutes_imgs[:, :, 0, index] ** 2 + toutes_imgs[:, :, 1, index] ** 2) ** (1 / 2)
+    velocity = np.ma.masked_where(toutes_formes[:, :, 0, index] < 0.9, velocity)
+    uu = np.ma.masked_where(toutes_formes[:, :, 0, index] < 0.9, toutes_imgs[:, :, 0, index])
+    vv = np.ma.masked_where(toutes_formes[:, :, 0, index] < 0.9, toutes_imgs[:, :, 1, index])
+    pp = np.ma.masked_where(toutes_formes[:, :, 0, index] < 0.9, toutes_imgs[:, :, 2, index])
+
+    cmap = plt.cm.coolwarm
+    cmap.set_bad(color='black')
+
+    plt.imsave(dir_matrices + 'shapes/shape_{}.png'.format(index), toutes_formes[:, :, 0, index], cmap='gray')
+    plt.imsave(dir_matrices + 'u/shape_{}.png'.format(index), uu, cmap=cmap, vmin=bas, vmax=haut)
+    plt.imsave(dir_matrices + 'v/shape_{}.png'.format(index), vv, cmap=cmap, vmin=bas, vmax=haut)
+    plt.imsave(dir_matrices + 'p/shape_{}.png'.format(index), pp, cmap=cmap, vmin=bas, vmax=haut)
+    plt.imsave(dir_matrices + 'velocities/shape_{}.png'.format(index), velocity, cmap=cmap, vmin=bas, vmax=haut)
 
 end = time()
 print(end - start)
