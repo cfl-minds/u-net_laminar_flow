@@ -1,4 +1,4 @@
-# flow_prediction
+# U-net_laminar_flow
 
 A project concerned with the prediction of (laminar) velocity and pressure fields from an input shape using different U-net architectures. If you exploit this work for your own research, please consider citing https://arxiv.org/abs/1910.13532.
 
